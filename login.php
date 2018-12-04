@@ -92,15 +92,6 @@ if(!empty($_POST["logout"])) {
 		<div><input type="submit" name="login" value="Login" class="form-submit-button"></span></div>
 	</div>       
 </form>
-<?php 
-} else { 
-$result = mysqlI_query($conn,"SELECT * FROM users WHERE user_id='" . $_SESSION["user_id"] . "'");
-$row  = mysqli_fetch_array($result);
-?>
-<form action="" method="post" id="frmLogout">
-<div class="member-dashboard">Welcome <?php echo ucwords($row['display_name']); ?>, You have successfully logged in!<br>
-Click to <input type="submit" name="logout" value="Logout" class="logout-button">.</div>
-</form>
 </div>
 </div>
 <?php } ?>
