@@ -77,7 +77,6 @@ if(!empty($_POST["logout"])) {
 <body>
 <div>
 <div style="display:block;margin:0px auto;">
-<?php if(empty($_SESSION["user_id"])) { ?>
 <form action="" method="post" id="frmLogin">
 	<div class="error-message"><?php if(isset($message)) { echo $message; } ?></div>	
 	<div class="field-group">
@@ -90,9 +89,9 @@ if(!empty($_POST["logout"])) {
 	</div>
 	<div class="field-group">
 		<div><input type="submit" name="login" value="Login" class="form-submit-button"></span></div>
-	</div>       
+	</div>  
+    <a href="registration.php">Don't have an account? Register here</a>
 </form>
 </div>
 </div>
-<?php } ?>
 </body></html>
