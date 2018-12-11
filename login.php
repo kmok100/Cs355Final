@@ -6,7 +6,7 @@ $message="";
 if(!empty($_POST["login"])) {
   
   //Table named login with UserID, Username, Password as columns. Change to fit offical columns as neccessary
-	$result = mysqli_query($conn,"SELECT * FROM login WHERE Username='" . $_POST["user_name"] . "' and Password = '". $_POST["password"]."'");
+	$result = mysqli_query($conn,"SELECT * FROM user WHERE username='" . $_POST["user_name"] . "' and password = '". $_POST["password"]."'");
 	$row  = mysqli_fetch_array($result);
 	if(is_array($row)) {
 	$_SESSION["user_id"] = $row['user_id'];
