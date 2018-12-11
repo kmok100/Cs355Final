@@ -83,7 +83,7 @@ if (isset($_POST['register']))
   $age = $_POST['age'];
   $weight = $_POST['weight'];
   $height = $_POST['height'];
-  $bmi = $weight * 703 / $height;
+  $bmi = $weight * 703 / ($height * $height);
   $joined = date("Y-m-d");
   //birthday is formatted into correct db format
   $birthday = $_POST['birthday']; 
@@ -100,7 +100,7 @@ if (isset($_POST['register']))
   }
   else if ($user) // if user exists
   { 
-    if ($user['Username'] === $username)
+    if ($user['username'] === $username)
     {
       echo("Username already exists. Try a new one");
     }
@@ -112,7 +112,7 @@ if (isset($_POST['register']))
     echo $username . " " . $password_1;
     //Change below to match our db
   	$query = "INSERT INTO user (email, username, password, name, gender, age, weight, height, joined, bmi, currentWeight, birthdate) 
-  			  VALUES('$email', '$username', '$password', '$name', '$gender', '$age', '$weight', '$height', '$joined', '$bmi', '$weight', '$birthday')";
+  			  VALUES('$email', '$username', '$password_1', '$name', '$gender', '$age', '$weight', '$height', '$joined', '$bmi', '$weight', '$birthday')";
          
   	mysqli_query($conn, $query);
   	$_SESSION['username'] = $username;
