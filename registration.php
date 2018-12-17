@@ -3,6 +3,8 @@
 // ----------------------------------------------------------------------------------------------------
 // - Display Errors
 // ----------------------------------------------------------------------------------------------------
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 ini_set('display_errors', 'On');
 ini_set('html_errors', 0);
 
@@ -75,32 +77,31 @@ if (isset($_POST['register']))
   $username = $_POST['username'];
   $password_1 = $_POST['password1'];
   $password_2 = $_POST['password2'];
-  
-  
   $email = $_POST['email'];
-  $name = $_POST['name'];
+  $fname = $_POST['fname'];
+  $lname = $_POST['lname'];
   $gender = $_POST['gender'];  //M,F,O
-  $age = $_POST['age'];
   $weight = $_POST['weight'];
   $height = $_POST['height'];
   $bmi = $weight * 703 / ($height * $height);
   $joined = date("Y-m-d");
-  //birthday is formatted into correct db format
-  $birthday = $_POST['birthday']; 
+  $time = date('H:i');
   // first check the database to make sure 
-  // a user does not already exist with the same username and/or email
+  // a user does not already exist with the same username 
   //Change below to match our db
-  $user_check_query = "SELECT * FROM user WHERE Username='$username' OR email='$email' ";
+  $user_check_query = "SELECT * FROM userTable WHERE userName='$username' ";
   $result = mysqli_query($conn, $user_check_query);
   $user = mysqli_fetch_assoc($result);
+
   
+
   if ($password_1 != $password_2) 
   {
 	  echo ("The two passwords do not match");
   }
   else if ($user) // if user exists
   { 
-    if ($user['username'] === $username)
+    if ($user['userName'] == $username)
     {
       echo("Username already exists. Try a new one");
     }
@@ -109,16 +110,38 @@ if (isset($_POST['register']))
   else
   {
     //remove echo below to hide username and password
-    echo $username . " " . $password_1;
-    //Change below to match our db
-  	$query = "INSERT INTO user (email, username, password, name, gender, age, weight, height, joined, bmi, currentWeight, birthdate) 
-  			  VALUES('$email', '$username', '$password_1', '$name', '$gender', '$age', '$weight', '$height', '$joined', '$bmi', '$weight', '$birthday')";
+    //echo $username . " " . $password_1;
+
+  	$query = "INSERT INTO userTable (userName, password, fName, lName, gender, registerDate, registerWeight, registerHeight, registerBmi, email) 
+  			  VALUES('$username', '$password_1', '$fname', '$lname', '$gender', '$joined', '$weight', '$height', '$bmi', '$email')";
          
   	mysqli_query($conn, $query);
+
+	$user_check_query = "SELECT * FROM userTable WHERE userName='$username' ";
+ 	 $result = mysqli_query($conn, $user_check_query);
+  	$user1 = mysqli_fetch_assoc($result);
+
+	$_SESSION["userId"] = $user1['userId'];
+  $userID = $_SESSION["userId"];
+//Need to get this inserted into the weightTable. Uncommenting this gives white page 
+	$query1 = "INSERT INTO weightTable (userId, userName, weight, weightDate, bmi, weightTime, previousWeight) 
+    VALUES('$userID', '$username', '$weight', '$joined', '$bmi', '$time', '$weight' )";
+
+	mysqli_query($conn, $query1);
+
   	$_SESSION['username'] = $username;
   	$_SESSION['success'] = "You are now logged in";
+
+  // the message
+  $msg = "Hello $fname,\n\nWelcome to weigh-in, your account has been created.";
+
+  // use wordwrap() if lines are longer than 70 characters
+  $msg = wordwrap($msg,70);
+
+  // send email
+  mail("$email","Welcome to Weigh-in!",$msg);
     //Echo below redirects to info.html. Uncomment out later
-    //echo '<script>window.location.href = "info.html";</script>';
+    echo '<script>window.location.href = "info.php";</script>';
     
   }
 }
@@ -126,7 +149,7 @@ if (isset($_POST['register']))
 
 <html>
 <head>
-<title>Register (WIP)</title>
+<title>Register</title>
 <style>
 #frmRegistration { 
 	padding: 20px 60px;
@@ -197,11 +220,15 @@ if (isset($_POST['register']))
 		<div><input name="email" type="text" class="input-field" placeholder="username@email.com" oninvalid="setCustomValidity('Please enter a valid email address.')" oninput="setCustomValidity('')" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,3}$" required maxlength="45">
   </div>
 	<div class="field-group">
-		<div><label for="login">Name</label></div>
-		<div><input name="name" type="text" class="input-field" maxlength="45" required> </div>
+		<div><label for="login">First Name</label></div>
+		<div><input name="fname" type="text" class="input-field" maxlength="45" required> </div>
+	</div>
+  <div class="field-group">
+		<div><label for="login">Last Name</label></div>
+		<div><input name="lname" type="text" class="input-field" maxlength="45" required> </div>
 	</div>
   <div id="Gender">
-        <select name='gender' >
+        <select name='gender' required>
           <option disabled selected value>Gender</option>
           <option value='M'>Male</option>
           <option value='F'>Female</option>
@@ -209,20 +236,12 @@ if (isset($_POST['register']))
         </select>
   </div>
   <div class="field-group">
-		<div><label for="login">Age</label></div> <!-- int(11)?-->
-		<div><input name="age" type="number" class="input-field" pattern="[0-9]+" min="0" max="100" required></div>
-	</div>
-  <div class="field-group">
-		<div><label for="login">Weight</label></div> <!-- int(11)?-->
+		<div><label for="login">Weight (in lb)</label></div> 
 		<div><input name="weight" type="number" class="input-field" min="0" max="400" pattern="^\d*(\.\d{0,2})?$" step="0.01" maxlength="5" required> </div>
 	</div>
 	<div class="field-group">
-		<div><label for="login">Height</label></div> <!-- might need to change.db uses varchar(45). Is this in inches? Or mix of both?-->
-		<div><input name="height" type="number" class="input-field" min="0" max="100" pattern="^\d*(\.\d{0,2})?$" step="0.01" max="3" required> </div>
-	</div>
-  <div class="field-group">
-	  <div><label for="login">Birthday</label></div>
-		<div><input name="birthday" type="date" class="input-field" required></div>
+		<div><label for="login">Height (in inches)</label></div>
+		<div><input name="height" type="number" class="input-field" min="0" max="100" pattern="^\d*(\.\d{0,2})?$" max="3" required> </div>
 	</div>
   <div><input type="submit" name="register" value="Register" class="form-submit-button" ></span></div>
 </div>       
