@@ -1,4 +1,4 @@
-This is the template UML for the DB. But the main important part is visible in the UML, which is the table relationship between Each tables. 
+The UML was just a template for the DB. But the main important part is visible in the UML, which is the table relationship between Each tables. 
 The weightTable hold the foreign key and point to the userTable. Also, some key attribute in the tables that is not visible that are username 
 attribute has a unique key where all the username has to be the same, registerWeight(userTable), and dateWeight (weightTable) are useful to 
 create store procedure by finding user's weight by date and how many weight has the user lost since the registration and also create procedure 
